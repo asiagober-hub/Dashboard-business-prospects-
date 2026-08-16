@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staffing Prospects</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f4f6f8;
+color:#1f2937
+}
+
+header{
+background:#18212f;
+color:white;
+padding:22px
+}
+
+header h1{margin:0 0 6px}
+header p{margin:0;color:#cbd5e1}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px
+}
+
+.dashboard{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:12px;
+margin-bottom:20px
+}
+
+.stat{
+background:white;
+border-radius:12px;
+padding:16px;
+box-shadow:0 2px 8px rgba(0,0,0,.06)
+}
+
+.stat-label{
+font-size:12px;
+color:#64748b
+}
+
+.stat-number{
+font-size:27px;
+font-weight:bold;
+margin-top:5px
+}
+
+.panel{
+background:white;
+border-radius:12px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 2px 8px rgba(0,0,0,.06)
+}
+
+.toolbar{
+display:flex;
+gap:10px;
+flex-wrap:wrap
+}
+
+button{
+border:0;
+border-radius:8px;
+padding:10px 14px;
+cursor:pointer;
+font-weight:600
+}
+
+.btn-primary{background:#1f6f5b;color:white}
+.btn-secondary{background:#e2e8f0;color:#1e293b}
+.btn-danger{background:#dc2626;color:white}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+border:1px solid #cbd5e1;
+border-radius:8px;
+font-size:14px
+}
+
+textarea{
+min-height:100px;
+resize:vertical
+}
+
+.form-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px
+}
+
+.form-group{
+display:flex;
+flex-direction:column;
+gap:6px
+}
+
+.full{grid-column:1/-1}
+
+label{
+font-size:13px;
+font-weight:600
+}
+
+.prospect-card{
+border:1px solid #dbe3ea;
+border-radius:12px;
+padding:18px;
+margin-bottom:16px
+}
+
+.prospect-header{
+display:flex;
+justify-content:space-between;
+gap:15px
+}
+
+.prospect-header h3{
+margin:0 0 5px
+}
+
+.score{
+font-size:20px;
+font-weight:bold
+}
+
+.score-hot{color:#dc2626}
+.score-warm{color:#d97706}
+.score-cold{color:#64748b}
+
+.badge{
+display:inline-block;
+background:#e2e8f0;
+padding:5px 9px;
+border-radius:20px;
+font-size:12px;
+font-weight:600
+}
+
+.contact-card,
+.objection-card,
+.value-card,
+.call-card,
+.template-card{
+background:#f8fafc;
+border-radius:10px;
+padding:13px;
+margin-top:10px
+}
+
+.contact-actions{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+margin-top:8px
+}
+
+.small{
+font-size:12px;
+padding:7px 10px
+}
+
+.action-box{
+background:#eef6f3;
+border-left:4px solid #1f6f5b;
+padding:12px;
+border-radius:8px;
+margin-top:12px
+}
+
+.action-box strong{
+color:#1f6f5b
+}
+
+.section-title{
+margin-top:20px;
+margin-bottom:8px
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+display:none;
+justify-content:center;
+align-items:center;
+padding:20px;
+z-index:1000
+}
+
+.modal.open{display:flex}
+
+.modal-content{
+background:white;
+width:100%;
+max-width:700px;
+max-height:90vh;
+overflow-y:auto;
+border-radius:14px;
+padding:20px
+}
+
+.modal-header{
+display:flex;
+justify-content:space-between;
+align-items:center
+}
+
+.modal-header h2{margin:0}
+
+.close{
+background:transparent;
+font-size:26px;
+padding:2px 8px
+}
+
+.empty{
+text-align:center;
+padding:35px;
+color:#64748b
+}
+
+hr{
+border:0;
+border-top:1px solid #e2e8f0;
+margin:20px 0
+}
+
+@media(max-width:900px){
+.dashboard{grid-template-columns:repeat(3,1fr)}
+}
+
+@media(max-width:650px){
+.dashboard{grid-template-columns:repeat(2,1fr)}
+.form-grid{grid-template-columns:1fr}
+.full{grid-column:auto}
+.prospect-header{flex-direction:column}
+.toolbar button{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Staffing Prospects</h1>
+<p>Staffing sales prospecting command center</p>
+</header>
+
+<div class="container">
+
+<div class="dashboard">
+
+<div class="stat">
+<div class="stat-label">Businesses</div>
+<div class="stat-number" id="businessCount">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Contacts</div>
+<div class="stat-number" id="contactCount">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Calls</div>
+<div class="stat-number" id="callCount">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Follow-Ups</div>
+<div class="stat-number" id="followupCount">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Hot Prospects</div>
+<div class="stat-number" id="hotCount">0</div>
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="toolbar">
+
+<button class="btn-primary" onclick="openModal('businessModal')">
++ Add Business
+</button>
+
+<button class="btn-secondary" onclick="openModal('emailModal');renderTemplates()">
+✉️ Email Templates
+</button>
+
+<button class="btn-secondary" onclick="openModal('valueModal');renderValueBank()">
+💎 Value Bank
+</button>
+
+<button class="btn-secondary" onclick="openModal('customObjectionModal')">
+➕ Custom Objection
+</button>
+
+</div>
+
+<br>
+
+<input
+id="searchInput"
+placeholder="Search businesses, contacts, titles, industries..."
+oninput="renderProspects()"
+>
+
+</div>
+
+<div class="panel">
+
+<h2>🏢 Prospect Pipeline</h2>
+
+<div id="prospectList">
+<div class="empty">
+No prospects yet.<br><br>
+Click <strong>+ Add Business</strong> to begin.
+</div>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- BUSINESS -->
+
+<div class="modal" id="businessModal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h2>Add Business</h2>
+<button class="close" onclick="closeModal('businessModal')">×</button>
+</div>
+
+<br>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Business Name</label>
+<input id="businessName" placeholder="ABC Manufacturing">
+</div>
+
+<div class="form-group">
+<label>Industry</label>
+<input id="industry" placeholder="Manufacturing">
+</div>
+
+<div class="form-group">
+<label>Location</label>
+<input id="location" placeholder="Atlanta, GA">
+</div>
+
+<div class="form-group">
+<label>Open Positions</label>
+<input id="positions" type="number" min="0">
+</div>
+
+<div class="form-group">
+<label>Days Positions Have Been Open</label>
+<input id="daysOpen" type="number" min="0">
+</div>
+
+<div class="form-group">
+<label>Hiring Activity</label>
+<select id="hiringActivity">
+<option value="High">High</option>
+<option value="Medium" selected>Medium</option>
+<option value="Low">Low</option>
+</select>
+</div>
+
+<div class="form-group full">
+<label>Account Intelligence</label>
+<textarea id="accountNotes" placeholder="Hiring challenges, growth, turnover, urgent positions, company information..."></textarea>
+</div>
+
+</div>
+
+<hr>
+
+<h3>Primary Contact</h3>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Name</label>
+<input id="contactName" placeholder="Jane Smith">
+</div>
+
+<div class="form-group">
+<label>Title</label>
+<input id="contactTitle" placeholder="HR Director">
+</div>
+
+<div class="form-group">
+<label>Phone</label>
+<input id="contactPhone" placeholder="(404) 555-1234">
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input id="contactEmail" placeholder="jane@company.com">
+</div>
+
+</div>
+
+<br>
+
+<button class="btn-primary" onclick="saveBusiness()">
+Save Business
+</button>
+
+</div>
+</div>
+
+
+<!-- CONTACT -->
+
+<div class="modal" id="contactModal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h2>Add Contact</h2>
+<button class="close" onclick="closeModal('contactModal')">×</button>
+</div>
+
+<br>
+
+<input type="hidden" id="contactBusinessId">
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Name</label>
+<input id="additionalContactName">
+</div>
+
+<div class="form-group">
+<label>Title</label>
+<input id="additionalContactTitle" placeholder="Hiring Manager">
+</div>
+
+<div class="form-group">
+<label>Phone</label>
+<input id="additionalContactPhone">
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input id="additionalContactEmail">
+</div>
+
+</div>
+
+<br>
+
+<button class="btn-primary" onclick="saveContact()">
+Save Contact
+</button>
+
+</div>
+</div>
+
+
+<!-- CALL -->
+
+<div class="modal" id="callModal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h2>📞 Log Call</h2>
+<button class="close" onclick="closeModal('callModal')">×</button>
+</div>
+
+<br>
+
+<input type="hidden" id="callBusinessId">
+
+<div class="form-group">
+<label>Contact</label>
+<select id="callContact"></select>
+</div>
+
+<br>
+
+<div class="form-group">
+<label>Outcome</label>
+<select id="callOutcome">
+<option>Connected</option>
+<option>No Answer</option>
+<option>Voicemail</option>
+<option>Meeting Booked</option>
+<option>Follow-Up Needed</option>
+<option>Not Interested</option>
+</select>
+</div>
+
+<br>
+
+<div class="form-group">
+<label>Call Notes</label>
+<textarea id="callNotes"></textarea>
+</div>
+
+<br>
+
+<button class="btn-primary" onclick="saveCall()">
+Save Call
+</button>
+
+</div>
+</div>
+
+
+<!-- EMAIL -->
+
+<div class="modal" id="emailModal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h2>✉️ Email Templates</h2>
+<button class="close" onclick="closeModal('emailModal')">×</button>
+</div>
+
+<br>
+
+<div id="templateList"></div>
+
+<hr>
+
+<h3>Create Template</h3>
+
+<div class="form-group">
+<label>Template Name</label>
+<input id="templateName" placeholder="Initial Staffing Outreach">
+</div>
+
+<br>
+
+<div class="form-group">
+<label>Subject</label>
+<input id="templateSubject">
+</div>
+
+<br>
+
+<div class="form-group">
+<label>Email Body</label>
+<textarea id="templateBody" style="min-height:180px"></textarea>
+</div>
+
+<br>
+
+<button class="btn-primary" onclick="saveTemplate()">
+Save Template
+</button>
+
+</div>
+</div>
+
+
+<!-- VALUE BANK -->
+
+<div class="modal" id="valueModal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h2>💎 Value Bank</h2>
+<button class="close" onclick="closeModal('valueModal')">×</button>
+</div>
+
+<p>
+Quick talking points to connect staffing services to the prospect's business needs.
+</p>
+
+<div id="valueBank"></div>
+
+</div>
+</div>
+
+
+<!-- CUSTOM OBJECTION -->
+
+<div class="modal" id="customObjectionModal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h2>➕ Custom Objection</h2>
+<button class="close" onclick="closeModal('customObjectionModal')">×</button>
+</div>
+
+<br>
+
+<div class="form-group">
+<label>Customer Objection</label>
+<input id="customObjection" placeholder="We already have a staffing agency.">
+</div>
+
+<br>
+
+<div class="form-group">
+<label>Suggested Response</label>
+<textarea id="customResponse"></textarea>
+</div>
+
+<br>
+
+<button class="btn-primary" onclick="saveCustomObjection()">
+Save Objection
+</button>
+
+</div>
+</div>
+
+
+<script>
+
+let prospects =
+JSON.parse(localStorage.getItem("staffingProspects")) || [];
+
+let objections =
+JSON.parse(localStorage.getItem("staffingObjections")) || [
+
+{
+objection:"We already have a staffing agency.",
+response:"That makes sense. Many companies already have staffing partners. I'd like to understand where you may still have hiring gaps."
+},
+
+{
+objection:"We don't need staffing right now.",
+response:"I understand. What positions do you typically have the most difficulty filling when hiring needs increase?"
+},
+
+{
+objection:"We don't have the budget.",
+response:"I understand. If hiring delays are affecting operations, would it be helpful to look at where staffing support could reduce that pressure?"
+},
+
+{
+objection:"Just send me an email.",
+response:"Absolutely. To make the information relevant, what types of positions are you currently hiring for?"
+},
+
+{
+objection:"I'm too busy.",
+response:"I completely understand. I'll keep it brief. What is the biggest hiring challenge you're dealing with right now?"
+},
+
+{
+objection:"We hire internally.",
+response:"That makes sense. Do you ever use outside staffing support when internal recruiting can't fill a position quickly enough?"
+},
+
+{
+objection:"We're not hiring.",
+response:"Understood. Are there certain positions you typically have difficulty filling when hiring picks back up?"
+},
+
+{
+objection:"Your rates are too high.",
+response:"I understand cost is important. Besides price, what would you need from a staffing partner to make the relationship worthwhile?"
+}
+
+];
+
+
+let templates =
+JSON.parse(localStorage.getItem("staffingTemplates")) || [
+
+{
+name:"Initial Staffing Outreach",
+subject:"Staffing support for your hiring needs",
+body:`Hi {{contact}},
+
+I wanted to reach out regarding your current hiring needs at {{company}}.
+
+I'd be happy to learn more about the roles you're having the most difficulty filling and see whether our staffing resources could help.
+
+Would you be open to a quick conversation?
+
+Best,
+Asia`
+},
+
+{
+name:"Follow-Up",
+subject:"Following up on your hiring needs",
+body:`Hi {{contact}},
+
+I wanted to follow up regarding your hiring needs at {{company}}.
+
+If you're still working to fill positions, I'd be happy to discuss how our staffing resources may be able to help.
+
+Best,
+Asia`
+}
+
+];
+
+
+let valueBank = [
+
+{
+title:"Reduce Time-to-Fill",
+text:"Staffing support can help reduce the time critical positions remain open and keep operations moving."
+},
+
+{
+title:"Access to Talent",
+text:"Position your staffing team as an additional source of qualified candidates when internal recruiting is not producing enough applicants."
+},
+
+{
+title:"Urgent Hiring",
+text:"When positions have been open for an extended period, focus the conversation on the operational impact of leaving those roles unfilled."
+},
+
+{
+title:"Hiring Flexibility",
+text:"Staffing can give companies flexibility when hiring demand increases or changes quickly."
+},
+
+{
+title:"Recruiting Workload",
+text:"A staffing partner can help take some of the sourcing and screening workload away from an internal HR team."
+},
+
+{
+title:"Hard-to-Fill Roles",
+text:"Focus on specialized, high-volume, or difficult-to-fill positions where outside recruiting support can add value."
+}
+
+];
+
+
+function saveData(){
+
+localStorage.setItem(
+"staffingProspects",
+JSON.stringify(prospects)
+);
+
+localStorage.setItem(
+"staffingObjections",
+JSON.stringify(objections)
+);
+
+localStorage.setItem(
+"staffingTemplates",
+JSON.stringify(templates)
+);
+
+}
+
+
+function openModal(id){
+
+document.getElementById(id).classList.add("open");
+
+}
+
+
+function closeModal(id){
+
+document.getElementById(id).classList.remove("open");
+
+}
+
+
+function calculateScore(p){
+
+let score=0;
+
+score += Math.min(p.positions * 5,30);
+
+if(p.daysOpen >= 60) score += 30;
+else if(p.daysOpen >= 30) score += 20;
+else if(p.daysOpen >= 14) score += 10;
+
+if(p.hiringActivity==="High") score += 25;
+else if(p.hiringActivity==="Medium") score += 15;
+else score += 5;
+
+if(p.contacts.length) score += 10;
+
+if(p.calls.length) score += 5;
+
+return Math.min(score,100);
+
+}
+
+
+function scoreLabel(score){
+
+if(score>=70)
+return `<span class="score score-hot">${score}/100 🔥 HOT</span>`;
+
+if(score>=45)
+return `<span class="score score-warm">${score}/100 🟠 WARM</span>`;
+
+return `<span class="score score-cold">${score}/100 ⚪ COLD</span>`;
+
+}
+
+
+function nextBestAction(p){
+
+const score=calculateScore(p);
+
+if(!p.contacts.length)
+return "Find or add an HR, hiring manager, operations leader, or decision-maker.";
+
+if(!p.calls.length)
+return "Make the first call and identify the biggest hiring challenge.";
+
+const last=p.calls[p.calls.length-1];
+
+if(last.outcome==="Meeting Booked")
+return "Prepare for the scheduled meeting using the prospect's hiring intelligence.";
+
+if(last.outcome==="Follow-Up Needed")
+return "Complete the requested follow-up.";
+
+if(last.outcome==="No Answer" || last.outcome==="Voicemail")
+return "Try another contact or make another call at a different time.";
+
+if(score>=70)
+return "Prioritize this prospect today. The hiring signals indicate a strong staffing opportunity.";
+
+if(p.daysOpen>=30)
+return "Ask about the business impact of positions remaining open for this long.";
+
+return "Continue discovery and identify additional hiring needs.";
+
+}
+
+
+function saveBusiness(){
+
+const company=
+document.getElementById("businessName").value.trim();
+
+if(!company){
+
+alert("Enter a business name.");
+
+return;
+
+}
+
+
+const business={
+
+id:Date.now(),
+
+company,
+
+industry:
+document.getElementById("industry").value.trim(),
+
+location:
+document.getElementById("location").value.trim(),
+
+positions:
+parseInt(document.getElementById("positions").value)||0,
+
+daysOpen:
+parseInt(document.getElementById("daysOpen").value)||0,
+
+hiringActivity:
+document.getElementById("hiringActivity").value,
+
+notes:
+document.getElementById("accountNotes").value.trim(),
+
+contacts:[],
+
+calls:[],
+
+followups:[]
+
+};
+
+
+const name=
+document.getElementById("contactName").value.trim();
+
+if(name){
+
+business.contacts.push({
+
+id:Date.now()+1,
+
+name,
+
+title:
+document.getElementById("contactTitle").value.trim(),
+
+phone:
+document.getElementById("contactPhone").value.trim(),
+
+email:
+document.getElementById("contactEmail").value.trim()
+
+});
+
+}
+
+
+prospects.push(business);
+
+saveData();
+
+closeModal("businessModal");
+
+clearBusinessForm();
+
+renderProspects();
+
+}
+
+
+function clearBusinessForm(){
+
+[
+"businessName",
+"industry",
+"location",
+"positions",
+"daysOpen",
+"accountNotes",
+"contactName",
+"contactTitle",
+"contactPhone",
+"contactEmail"
+].forEach(id=>{
+document.getElementById(id).value="";
+});
+
+document.getElementById("hiringActivity").value="Medium";
+
+}
+
+
+function addContact(id){
+
+document.getElementById("contactBusinessId").value=id;
+
+openModal("contactModal");
+
+}
+
+
+function saveContact(){
+
+const businessId=
+Number(document.getElementById("contactBusinessId").value);
+
+const p=
+prospects.find(x=>x.id===businessId);
+
+if(!p)return;
+
+const name=
+document.getElementById("additionalContactName").value.trim();
+
+if(!name){
+
+alert("Enter the contact name.");
+
+return;
+
+}
+
+
+p.contacts.push({
+
+id:Date.now(),
+
+name,
+
+title:
+document.getElementById("additionalContactTitle").value.trim(),
+
+phone:
+document.getElementById("additionalContactPhone").value.trim(),
+
+email:
+document.getElementById("additionalContactEmail").value.trim()
+
+});
+
+
+saveData();
+
+closeModal("contactModal");
+
+renderProspects();
+
+}
+
+
+function openCall(id){
+
+const p=prospects.find(x=>x.id===id);
+
+if(!p)return;
+
+document.getElementById("callBusinessId").value=id;
+
+const select=document.getElementById("callContact");
+
+select.innerHTML="";
+
+p.contacts.forEach(c=>{
+
+const option=document.createElement("option");
+
+option.value=c.id;
+
+option.textContent=c.name;
+
+select.appendChild(option);
+
+});
+
+if(!p.contacts.length){
+
+const option=document.createElement("option");
+
+option.value="";
+
+option.textContent="No contact added";
+
+select.appendChild(option);
+
+}
+
+document.getElementById("callNotes").value="";
+
+openModal("callModal");
+
+}
+
+
+function saveCall(){
+
+const id=
+Number(document.getElementById("callBusinessId").value);
+
+const p=prospects.find(x=>x.id===id);
+
+if(!p)return;
+
+p.calls.push({
+
+id:Date.now(),
+
+date:new Date().toLocaleString(),
+
+contactId:
+Number(document.getElementById("callContact").value),
+
+outcome:
+document.getElementById("callOutcome").value,
+
+notes:
+document.getElementById("callNotes").value.trim()
+
+});
+
+
+saveData();
+
+closeModal("callModal");
+
+renderProspects();
+
+}
+
+
+function renderProspects(){
+
+const list=document.getElementById("prospectList");
+
+const search=
+document.getElementById("searchInput")
+.value
+.toLowerCase();
+
+const filtered=prospects.filter(p=>{
+
+const contactText=
+p.contacts.map(c=>
+`${c.name} ${c.title} ${c.phone} ${c.email}`
+).join(" ");
+
+return `
+${p.company}
+${p.industry}
+${p.location}
+${contactText}
+`
+.toLowerCase()
+.includes(search);
+
+});
+
+
+if(!filtered.length){
+
+list.innerHTML=`
+<div class="empty">
+No prospects found.
+</div>
+`;
+
+updateStats();
+
+return;
+
+}
+
+
+list.innerHTML=filtered.map(p=>{
+
+const score=calculateScore(p);
+
+return `
+
+<div class="prospect-card">
+
+<div class="prospect-header">
+
+<div>
+
+<h3>${escapeHTML(p.company)}</h3>
+
+${escapeHTML(p.industry||"")}
+
+${p.location?" • "+escapeHTML(p.location):""}
+
+</div>
+
+<div>
+
+${scoreLabel(score)}
+
+</div>
+
+</div>
+
+
+<br>
+
+<span class="badge">
+${escapeHTML(p.hiringActivity)} Hiring Activity
+</span>
+
+<span class="badge">
+${p.positions} Open Positions
+</span>
+
+<span class="badge">
+${p.daysOpen} Days Open
+</span>
+
+
+<div class="action-box">
+
+<strong>🎯 Next Best Action</strong>
+
+<p>
+${escapeHTML(nextBestAction(p))}
+</p>
+
+</div>
+
+
+<h3 class="section-title">
+👥 Contacts
+</h3>
+
+${
+p.contacts.length
+
+?
+
+p.contacts.map(c=>`
+
+<div class="contact-card">
+
+<strong>
+${escapeHTML(c.name)}
+</strong>
+
+${escapeHTML(c.title||"")}
+
+${c.phone?
+`<div>📞 ${escapeHTML(c.phone)}</div>`:""}
+
+${c.email?
+`<div>✉️ ${escapeHTML(c.email)}</div>`:""}
+
+</div>
+
+`).join("")
+
+:
+
+"<p>No contacts yet.</p>"
+}
+
+
+<br>
+
+<div class="toolbar">
+
+<button class="btn-primary" onclick="addContact(${p.id})">
++ Add Contact
+</button>
+
+<button class="btn-secondary" onclick="openCall(${p.id})">
+📞 Log Call
+</button>
+
+</div>
+
+
+<h3 class="section-title">
+💬 Live Objections
+</h3>
+
+<div>
+
+${objections.slice(0,4).map((o,index)=>`
+
+<div class="objection-card">
+
+<strong>
+"${escapeHTML(o.objection)}"
+</strong>
+
+<p>
+${escapeHTML(o.response)}
+</p>
+
+<button
+class="btn-secondary small"
+onclick="copyText(${JSON.stringify(o.response)})"
+>
+Copy Response
+</button>
+
+</div>
+
+`).join("")}
+
+</div>
+
+
+<h3 class="section-title">
+💎 Value Bank
+</h3>
+
+<div>
+
+${valueBank.slice(0,3).map(v=>`
+
+<div class="value-card">
+
+<strong>
+${escapeHTML(v.title)}
+</strong>
+
+<p>
+${escapeHTML(v.text)}
+</p>
+
+</div>
+
+`).join("")}
+
+</div>
+
+
+${
+p.notes
+
+?
+
+`
+<div class="action-box">
+
+<strong>
+🧠 Account Intelligence
+</strong>
+
+<p>
+${escapeHTML(p.notes)}
+</p>
+
+</div>
+`
+
+:""
+}
+
+
+${
+p.calls.length
+
+?
+
+`
+
+<h3 class="section-title">
+📞 Call History
+</h3>
+
+${p.calls.slice().reverse().map(c=>`
+
+<div class="call-card">
+
+<strong>
+${escapeHTML(c.outcome)}
+</strong>
+
+<div>
+${escapeHTML(c.date)}
+</div>
+
+${c.notes?
+`<p>${escapeHTML(c.notes)}</p>`:""}
+
+</div>
+
+`).join("")}
+
+`
+
+:""
+}
+
+</div>
+
+`;
+
+}).join("");
+
+updateStats();
+
+}
+
+
+function copyText(text){
+
+navigator.clipboard.writeText(text);
+
+alert("Response copied.");
+
+}
+
+
+function saveCustomObjection(){
+
+const objection=
+document.getElementById("customObjection")
+.value.trim();
+
+const response=
+document.getElementById("customResponse")
+.value.trim();
+
+if(!objection||!response){
+
+alert("Enter both the objection and response.");
+
+return;
+
+}
+
+
+objections.push({
+
+objection,
+
+response
+
+});
+
+
+saveData();
+
+document.getElementById("customObjection").value="";
+
+document.getElementById("customResponse").value="";
+
+closeModal("customObjectionModal");
+
+renderProspects();
+
+}
+
+
+function renderTemplates(){
+
+document.getElementById("templateList").innerHTML=
+templates.map(t=>`
+
+<div class="template-card">
+
+<strong>${escapeHTML(t.name)}</strong>
+
+<p>
+<strong>Subject:</strong>
+${escapeHTML(t.subject)}
+</p>
+
+<textarea>${escapeHTML(t.body)}</textarea>
+
+</div>
+
+`).join("");
+
+}
+
+
+function saveTemplate(){
+
+const name=
+document.getElementById("templateName").value.trim();
+
+const subject=
+document.getElementById("templateSubject").value.trim();
+
+const body=
+document.getElementById("templateBody").value.trim();
+
+if(!name||!subject||!body){
+
+alert("Complete all template fields.");
+
+return;
+
+}
+
+
+templates.push({
+
+name,
+
+subject,
+
+body
+
+});
+
+
+saveData();
+
+document.getElementById("templateName").value="";
+
+document.getElementById("templateSubject").value="";
+
+document.getElementById("templateBody").value="";
+
+renderTemplates();
+
+}
+
+
+function renderValueBank(){
+
+document.getElementById("valueBank").innerHTML=
+valueBank.map(v=>`
+
+<div class="value-card">
+
+<strong>${escapeHTML(v.title)}</strong>
+
+<p>${escapeHTML(v.text)}</p>
+
+</div>
+
+`).join("");
+
+}
+
+
+function updateStats(){
+
+const contacts=
+prospects.reduce((n,p)=>n+p.contacts.length,0);
+
+const calls=
+prospects.reduce((n,p)=>n+p.calls.length,0);
+
+const followups=
+prospects.reduce((n,p)=>n+p.followups.length,0);
+
+const hot=
+prospects.filter(p=>calculateScore(p)>=70).length;
+
+document.getElementById("businessCount").textContent=
+prospects.length;
+
+document.getElementById("contactCount").textContent=
+contacts;
+
+document.getElementById("callCount").textContent=
+calls;
+
+document.getElementById("followupCount").textContent=
+followups;
+
+document.getElementById("hotCount").textContent=
+hot;
+
+}
+
+
+function escapeHTML(value){
+
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+document.querySelectorAll(".modal").forEach(modal=>{
+
+modal.addEventListener("click",e=>{
+
+if(e.target===modal)
+modal.classList.remove("open");
+
+});
+
+});
+
+
+renderProspects();
+
+</script>
+
+</body>
+</html>
